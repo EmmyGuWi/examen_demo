@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.examen.tec.demo.Dto.ShowResponse;
 import com.examen.tec.demo.Dto.ShowSearchResponse;
+import com.examen.tec.demo.Entities.ShowDocument;
 
 @Component
 public class ShowMapper {
@@ -19,6 +20,20 @@ public class ShowMapper {
                 show.getGenres(),
                 show.getSummary()
         );
+    }
+
+
+       public ShowResponse toShowResponse(ShowDocument show) {
+
+        ShowResponse response = new ShowResponse();
+
+        response.setId(show.getId());
+        response.setName(show.getName());
+        response.setChannel(show.getChannel());
+        response.setSummary(show.getSummary());
+        response.setGenres(show.getGenres());
+
+        return response;
     }
      public ShowResponse toShowResponse(TvMazeShow show) {
 
@@ -44,5 +59,18 @@ public class ShowMapper {
 
         return null;
     }
+
+    public ShowDocument toDocument(TvMazeShow show) {
+
+    ShowDocument document = new ShowDocument();
+
+    document.setId(show.getId());
+    document.setName(show.getName());
+    document.setChannel(resolveChannel(show));
+    document.setSummary(show.getSummary());
+    document.setGenres(show.getGenres());
+
+    return document;
+}
 
 }
