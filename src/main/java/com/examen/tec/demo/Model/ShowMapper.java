@@ -2,8 +2,10 @@ package com.examen.tec.demo.Model;
 
 import org.springframework.stereotype.Component;
 
+import com.examen.tec.demo.Dto.CommentResponse;
 import com.examen.tec.demo.Dto.ShowResponse;
 import com.examen.tec.demo.Dto.ShowSearchResponse;
+import com.examen.tec.demo.Entities.CommentDocument;
 import com.examen.tec.demo.Entities.ShowDocument;
 
 @Component
@@ -71,6 +73,16 @@ public class ShowMapper {
     document.setGenres(show.getGenres());
 
     return document;
+}
+
+
+public CommentResponse toCommentResponse(CommentDocument comment) {
+    CommentResponse response = new CommentResponse();
+
+    response.setComment(comment.getComment());
+    response.setRating(comment.getRating());
+
+    return response;
 }
 
 }

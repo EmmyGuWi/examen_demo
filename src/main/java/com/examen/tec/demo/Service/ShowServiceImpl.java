@@ -9,6 +9,7 @@ import com.examen.tec.demo.Client.ApiClient;
 import com.examen.tec.demo.Dto.ShowResponse;
 import com.examen.tec.demo.Entities.ShowDocument;
 import com.examen.tec.demo.Model.ShowMapper;
+import com.examen.tec.demo.Repository.CommentRepository;
 import com.examen.tec.demo.Repository.ShowRepository;
 
 @Service
@@ -17,14 +18,16 @@ public class ShowServiceImpl implements ShowService {
     private final ApiClient tvMazeClient;
     private final ShowMapper showMapper;
     private final ShowRepository showRepository;
+    private final CommentRepository commentRepository;
 
     public ShowServiceImpl(
             ApiClient tvMazeClient,
-            ShowMapper showMapper, ShowRepository showRepository) {
+            ShowMapper showMapper, ShowRepository showRepository, CommentRepository commentRepository   ) {
 
         this.tvMazeClient = tvMazeClient;
         this.showMapper = showMapper;
         this.showRepository = showRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -34,18 +37,29 @@ public class ShowServiceImpl implements ShowService {
         return showMapper.toShowResponse(show);*/
 
         Optional<ShowDocument> cachedShow = showRepository.findById(showId);
-
+        ShowResponse response;
         if (cachedShow.isPresent()) {
-            return showMapper.toShowResponse(cachedShow.get());
+           // return showMapper.toShowResponse(cachedShow.get());
+            response = showMapper.toShowResponse(cachedShow.get());
+        }else {
+
+            var show = tvMazeClient.getShow(showId);
+
+            var document = showMapper.toDocument(show);
+
+            showRepository.save(document);
+
+            response = showMapper.toShowResponse(document);
         }
+        var comments = commentRepository.findByShowId(showId);
+      
+        var commentResponses = comments.stream()
+                .map(showMapper::toCommentResponse)
+                .toList();
 
-        var show = tvMazeClient.getShow(showId);
+        response.setComments(commentResponses);
 
-        var document = showMapper.toDocument(show);
-
-        showRepository.save(document);
-
-        return showMapper.toShowResponse(document);
+        return response;
     }
 
 }
