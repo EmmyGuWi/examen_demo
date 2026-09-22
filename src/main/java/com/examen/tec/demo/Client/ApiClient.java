@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.examen.tec.demo.Model.TvMazeSearchResult;
@@ -30,10 +31,14 @@ public class ApiClient {
     }
        public TvMazeShow getShow(Long showId) {
 
-        return restClient.get()
-                .uri("/shows/{id}", showId)
-                .retrieve()
-                .body(TvMazeShow.class);
+        try {
+            return restClient.get()
+                    .uri("/shows/{id}", showId)
+                    .retrieve()
+                    .body(TvMazeShow.class);
+        } catch (HttpClientErrorException.NotFound e) {
+            return null;
+        }
     }
 
 }

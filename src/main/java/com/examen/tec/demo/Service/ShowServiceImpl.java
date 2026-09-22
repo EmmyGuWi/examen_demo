@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.examen.tec.demo.Client.ApiClient;
 import com.examen.tec.demo.Dto.ShowResponse;
 import com.examen.tec.demo.Entities.ShowDocument;
+import com.examen.tec.demo.Exceptions.GeneralException;
 import com.examen.tec.demo.Model.ShowMapper;
 import com.examen.tec.demo.Repository.CommentRepository;
 import com.examen.tec.demo.Repository.ShowRepository;
@@ -44,6 +45,9 @@ public class ShowServiceImpl implements ShowService {
         }else {
 
             var show = tvMazeClient.getShow(showId);
+            if (show == null) {     
+                     throw new GeneralException("No se encontró el show con id: " + showId);
+            }
 
             var document = showMapper.toDocument(show);
 
